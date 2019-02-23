@@ -26,6 +26,11 @@ queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
     /* What if malloc returned NULL? */
+    if (q == NULL)
+    {
+      printf("can't allocate space for the queue.\n");
+      return NULL;
+    }
     q->head = NULL;
     return q;
 }
@@ -33,8 +38,21 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
-    /* How about freeing the list elements and the strings? */
-    /* Free queue structure */
+  /* How about freeing the list elements and the strings? */
+  /* Free queue structure */
+  if (q == NULL)
+  {
+    return;
+  }
+  list_ele_t *prev = q->head;
+  list_ele_t *temp = q->head;
+  while(temp != NULL)
+  {
+    free(temp->value);
+    prev = temp;
+    temp = temp->next;
+    free(prev);
+  }
     free(q);
 }
 
@@ -95,7 +113,7 @@ int q_size(queue_t *q)
 {
     /* You need to write the code for this function */
     /* Remember: It should operate in O(1) time */
-    return q->size;
+    return q ->size;
 }
 
 /*

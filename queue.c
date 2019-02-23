@@ -62,29 +62,29 @@ void q_free(queue_t *q)
  */
 bool q_insert_head(queue_t *q, char *s)
 {
+    /*Handle q not-existing situation*/
+    if (q == NULL) {
+        printf("This queue doesn't exist!\n");
+        return false;
+    }
     list_ele_t *newh;
     int str_size;
     char *copy_s;
     /* What should you do if the q is NULL? */
     /* If q is NULL, we new a queue and then
     insert the element to the head of this queue*/
-    newh = malloc(sizeof(list_ele_t));
-    if (newh == NULL) {
-        printf("Couldn't allocate space for this element\n");
-        return false;
-    }
-    str_size =
-        strlen(s) +
-        1;  // plus one here because strlen gets the length not including '\0'
+    str_size = strlen(s) + 1;
     copy_s = malloc(str_size * sizeof(char));
-    strcpy(copy_s, s);
-    if (copy_s == NULL) {
-        printf("Couldn't allocate space for this string\n");
+    newh = malloc(sizeof(list_ele_t));
+    if (newh == NULL || copy_s == NULL) {
+        printf("Couldn't allocate space\n");
+        free(copy_s);
         free(newh);
         return false;
     }
-    if (q == NULL) {
-        q = q_new();
+    strcpy(copy_s, s);
+    /*Handle empty queue situation*/
+    if (q->head == NULL) {
         q->head = newh;
         q->tail = newh;
         q->head->next = NULL;
@@ -109,9 +109,37 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
+    /*Handle queue not-existing situation*/
+    if (q == NULL) {
+        printf("This queue doesn't exist!\n");
+        return false;
+    }
+    list_ele_t *newt;
+    char *copy_s;
+    int str_size;
+    str_size = strlen(s) + 1;
+    newt = malloc(sizeof(list_ele_t));
+    copy_s = malloc(str_size * sizeof(char));
+    if (newt == NULL || copy_s == NULL) {
+        printf("Couldn't allocate space!\n");
+        free(copy_s);
+        free(newt);
+        return false;
+    }
+    strcpy(copy_s, s);
+    newt->value = copy_s;
+    newt->next = NULL;
+    /*Handle empty queue situation*/
+    if (q->head == NULL) {
+        q->head = newt;
+        q->tail = newt;
+        return true;
+    }
+    q->tail->next = newt;
+    q->tail = newt;
     /* You need to write the complete code for this function */
     /* Remember: It should operate in O(1) time */
-    return false;
+    return true;
 }
 
 /*

@@ -38,11 +38,14 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
-    /* How about freeing the list elements and the strings? */
-    /* Free queue structure */
+    /*Do nothing if the queue doesn't exist*/
     if (q == NULL) {
         return;
     }
+    /*Use pointer temp to go through the whole
+     queue and free the strings*/
+    /*Use prev pointer to access the elements which
+    temp just deleted their value, then we free the element*/
     list_ele_t *prev = q->head;
     list_ele_t *temp = q->head;
     while (temp != NULL) {
@@ -71,36 +74,39 @@ bool q_insert_head(queue_t *q, char *s)
     list_ele_t *newh;
     int str_size;
     char *copy_s;
-    /* What should you do if the q is NULL? */
-    /* If q is NULL, we new a queue and then
-    insert the element to the head of this queue*/
+
+    /*Allocate space for the string*/
     str_size = strlen(s) + 1;
     copy_s = malloc(str_size * sizeof(char));
+    /*Handle malloc failure*/
     if (copy_s == NULL) {
         printf("Couldn't allocate space for the string!\n");
         return false;
     }
+    /*Allocate space for the element*/
     newh = malloc(sizeof(list_ele_t));
+    /*Handle malloc failure*/
     if (newh == NULL) {
         printf("Couldn't allocate space for the element!\n");
+        /*If this function fails here, we need to
+        free the space we allocated above*/
         free(copy_s);
         return false;
     }
     strcpy(copy_s, s);
+
+    newh->value = copy_s;
     /*Handle empty queue situation*/
     if (q->head == NULL) {
-        q->head = newh;
         q->tail = newh;
-        q->head->next = NULL;
-        q->head->value = copy_s;
-        q->size++;
-        return true;
+        newh->next = NULL;
+    } else /*General situation*/
+    {
+        newh->next = q->head;
     }
-    /* Don't forget to allocate space for the string and copy it */
-    /* What if either call to malloc returns NULL? */
-    newh->next = q->head;
-    newh->value = copy_s;
     q->head = newh;
+
+    /*Count size of queue*/
     q->size++;
     return true;
 }
@@ -124,6 +130,8 @@ bool q_insert_tail(queue_t *q, char *s)
     char *copy_s;
     int str_size;
     str_size = strlen(s) + 1;
+
+    /*Allocate space for the new element and the string will be pointed to*/
     newt = malloc(sizeof(list_ele_t));
     if (newt == NULL) {
         printf("Couldn't allocate space for the element!\n");
@@ -132,6 +140,8 @@ bool q_insert_tail(queue_t *q, char *s)
     copy_s = malloc(str_size * sizeof(char));
     if (copy_s == NULL) {
         printf("Couldn't allocate space for the string!\n");
+        /*If the function fails here, we need to free the space we allocate
+        above to avoid memory leaking*/
         free(newt);
         return false;
     }
@@ -148,8 +158,6 @@ bool q_insert_tail(queue_t *q, char *s)
     q->tail->next = newt;
     q->tail = newt;
     q->size++;
-    /* You need to write the complete code for this function */
-    /* Remember: It should operate in O(1) time */
     return true;
 }
 
@@ -187,8 +195,6 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
-    /* You need to write the code for this function */
-    /* Remember: It should operate in O(1) time */
     if (q == NULL) {
         return 0;
     }
@@ -204,7 +210,6 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
-    /* You need to write the code for this function */
     /*Handle empty queue and non-existing queue*/
     if (q == NULL || q->head == NULL)
         return;
